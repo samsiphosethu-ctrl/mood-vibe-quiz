@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find Your Format | Mood</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #fff;
+  color: #1B3A2F;
+}
+.wrap {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 20px 28px;
+  text-align: center;
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6B9080;
+  margin-bottom: 8px;
+}
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1B3A2F;
+  margin-bottom: 6px;
+  line-height: 1.25;
+}
+.sub {
+  font-size: 13px;
+  color: #7A9189;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.progress-wrap {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+.pip {
+  height: 4px;
+  border-radius: 100px;
+  background: #D6E6DF;
+  flex: 1;
+  max-width: 80px;
+  transition: background 0.3s ease;
+}
+.pip.done   { background: #1B3A2F; }
+.pip.active { background: #5A9070; }
+.step { display: none; animation: rise 0.25s ease both; }
+.step.active { display: block; }
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.cat-card {
+  border-radius: 12px;
+  padding: 16px 14px 14px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.cat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(27,58,47,0.10); }
+.cat-card:active { transform: scale(0.97); }
+.cat-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.cat-name  { font-size: 14px; font-weight: 700; color: #1B3A2F; }
+.cat-last  { grid-column: span 2; }
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 9px;
+  margin-bottom: 6px;
+}
+.mood-chip {
+  border-radius: 100px;
+  padding: 11px 14px;
+  cursor: pointer;
+  border: 1.5px solid #C8DDD5;
+  background: #F3F8F5;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1B3A2F;
+  transition: background 0.14s ease, border-color 0.14s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.mood-chip:hover  { background: #E2F0E8; border-color: #9FC9B0; }
+.mood-chip:active { transform: scale(0.96); }
+.result-pill {
+  display: inline-block;
+  background: #E4F0EA;
+  color: #1B3A2F;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 100px;
+  margin-bottom: 20px;
+}
+.result-combo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.combo-tag {
+  border-radius: 100px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1B3A2F;
+}
+.combo-plus { font-size: 16px; color: #9BB0A9; }
+.result-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1B3A2F;
+  margin-bottom: 12px;
+  line-height: 1.35;
+}
+.result-body {
+  font-size: 14px;
+  color: #4D6860;
+  line-height: 1.65;
+  margin: 0 auto 26px;
+  max-width: 400px;
+}
+.cta-btn {
+  display: inline-block;
+  background: #1B3A2F;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px 30px;
+  border-radius: 100px;
+  transition: background 0.15s ease, transform 0.12s ease;
+  margin-bottom: 14px;
+  cursor: pointer;
+  border: none;
+}
+.cta-btn:hover  { background: #254D3F; transform: translateY(-1px); }
+.cta-btn:active { transform: scale(0.97); }
+.retry {
+  display: block;
+  background: none;
+  border: none;
+  color: #9BB0A9;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s ease;
+  margin: 0 auto;
+}
+.retry:hover { color: #1B3A2F; }
+</style>
+</head>
+<body>
+ 
+<div class="wrap">
+ 
+  <div class="progress-wrap">
+    <div class="pip active" id="pip1"></div>
+    <div class="pip" id="pip2"></div>
+    <div class="pip" id="pip3"></div>
+  </div>
+ 
+  <!-- Step 1: Category -->
+  <div class="step active" id="s1">
+    <p class="eyebrow">Step 1 of 2</p>
+    <h2 class="title">What's your format?</h2>
+    <p class="sub">Choose the type of product you're after.</p>
+    <div class="cat-grid">
+      <div class="cat-card" style="background:#F0EDF7;" onclick="pickCat('Gummies','🍬','#F0EDF7','gummies')">
+        <span class="cat-icon">🍬</span><span class="cat-name">Gummies</span>
+      </div>
+      <div class="cat-card" style="background:#E8F5ED;" onclick="pickCat('Flower','🌿','#E8F5ED','flower')">
+        <span class="cat-icon">🌿</span><span class="cat-name">Flower</span>
+      </div>
+      <div class="cat-card" style="background:#FEF3EC;" onclick="pickCat('Edibles','🧁','#FEF3EC','edibles')">
+        <span class="cat-icon">🧁</span><span class="cat-name">Edibles</span>
+      </div>
+      <div class="cat-card" style="background:#EAF4FB;" onclick="pickCat('Beverages','🥤','#EAF4FB','beverages')">
+        <span class="cat-icon">🥤</span><span class="cat-name">Beverages</span>
+      </div>
+      <div class="cat-card" style="background:#F5F0E8;" onclick="pickCat('Pre-Rolls','🌀','#F5F0E8','pre-rolls')">
+        <span class="cat-icon">🌀</span><span class="cat-name">Pre-Rolls</span>
+      </div>
+      <div class="cat-card" style="background:#FDEEE8;" onclick="pickCat('Concentrates','🔥','#FDEEE8','concentrates')">
+        <span class="cat-icon">🔥</span><span class="cat-name">Concentrates</span>
+      </div>
+      <div class="cat-card cat-last" style="background:#EEFAF3;" onclick="pickCat('Vapes','✨','#EEFAF3','vapes')">
+        <span class="cat-icon">✨</span><span class="cat-name">Vapes</span>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Step 2: Mood -->
+  <div class="step" id="s2">
+    <p class="eyebrow">Step 2 of 2</p>
+    <h2 class="title">What's your mood?</h2>
+    <p class="sub">Pick the feeling you're going for.</p>
+    <div class="mood-grid">
+      <div class="mood-chip" onclick="pickMood('Happy',      'happy',      'uplift your mood and encourage positive feelings')">😄 Happy</div>
+      <div class="mood-chip" onclick="pickMood('Chill',      'chill',      'create a calm state of mind and help you ease into the moment')">😌 Chill</div>
+      <div class="mood-chip" onclick="pickMood('Creative',   'creative',   'enhance creativity and get into a free-flowing headspace')">🎨 Creative</div>
+      <div class="mood-chip" onclick="pickMood('Focused',    'focused',    'support focus and clarity for a more productive flow')">🎯 Focused</div>
+      <div class="mood-chip" onclick="pickMood('Energized',  'energized',  'support natural energy levels and complement an active lifestyle')">⚡ Energized</div>
+      <div class="mood-chip" onclick="pickMood('Soothing',   'soothing',   'promote relaxation and support physical comfort')">🌊 Soothing</div>
+      <div class="mood-chip" onclick="pickMood('Social',     'social',     'enhance social experiences and support fun and relaxation')">🥂 Social</div>
+      <div class="mood-chip" onclick="pickMood('Classic',    'classic',    'enjoy a timeless, laid-back experience and help you unwind')">🌿 Classic</div>
+      <div class="mood-chip" onclick="pickMood('Sleepy',     'sleepy',     'help you wind down and transition into rest mode')">🌙 Sleepy</div>
+      <div class="mood-chip" onclick="pickMood('Aroused',    'aroused',    'elevate your evening and create memorable moments')">🕯️ Aroused</div>
+    </div>
+  </div>
+ 
+  <!-- Result -->
+  <div class="step" id="s3">
+    <span class="result-pill">Your match</span>
+    <div class="result-combo">
+      <span class="combo-tag" id="r-cat-tag"></span>
+      <span class="combo-plus">+</span>
+      <span class="combo-tag" id="r-mood-tag" style="background:#E4F0EA;"></span>
+    </div>
+    <h2 class="result-title" id="r-title"></h2>
+    <p class="result-body" id="r-body"></p>
+    <a class="cta-btn" id="r-cta" href="https://mood.com/shop" target="_blank" rel="noopener">Shop the match</a>
+    <button class="retry" onclick="reset()">Start over</button>
+  </div>
+ 
+</div>
+ 
+<script>
+var chosen = { cat: '', catBg: '', catIcon: '', catSlug: '', mood: '', moodSlug: '', moodDesc: '' };
+ 
+var catDesc = {
+  'Gummies':      'Our gummies are crafted to',
+  'Flower':       'Mood\'s hand-trimmed, slow-cured flower is made to',
+  'Edibles':      'Our edibles lineup is built to',
+  'Beverages':    'Mood\'s THC beverages are designed to',
+  'Pre-Rolls':    'Our pre-rolls are ready whenever you want to',
+  'Concentrates': 'Mood\'s artisan concentrates are crafted for those who want to',
+  'Vapes':        'Clean and consistent, Mood vapes are perfect to'
+};
+ 
+function goTo(n) {
+  ['s1','s2','s3'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    el.classList.remove('active');
+    if (i + 1 === n) el.classList.add('active');
+  });
+  ['pip1','pip2','pip3'].forEach(function(id, i) {
+    var p = document.getElementById(id);
+    p.className = 'pip';
+    if (i + 1 < n)  p.classList.add('done');
+    if (i + 1 === n) p.classList.add('active');
+  });
+}
+ 
+function pickCat(name, icon, bg, slug) {
+  chosen.cat     = name;
+  chosen.catBg   = bg;
+  chosen.catIcon = icon;
+  chosen.catSlug = slug;
+  goTo(2);
+}
+ 
+function pickMood(mood, slug, desc) {
+  chosen.mood     = mood;
+  chosen.moodSlug = slug;
+  chosen.moodDesc = desc;
+ 
+  var catTag = document.getElementById('r-cat-tag');
+  catTag.textContent = chosen.catIcon + ' ' + chosen.cat;
+  catTag.style.background = chosen.catBg;
+ 
+  document.getElementById('r-mood-tag').textContent = chosen.mood;
+  document.getElementById('r-title').textContent =
+    chosen.cat + ' for a ' + chosen.mood.toLowerCase() + ' vibe.';
+  document.getElementById('r-body').textContent =
+    (catDesc[chosen.cat] || 'Mood\'s ' + chosen.cat.toLowerCase() + ' lineup is built to') +
+    ' ' + chosen.moodDesc + '.';
+ 
+  var cta = document.getElementById('r-cta');
+  cta.href = 'https://mood.com/shop/product-mood?filter=' + chosen.moodSlug;
+  cta.textContent = 'Shop ' + chosen.mood + ' ' + chosen.cat;
+ 
+  goTo(3);
+}
+ 
+function reset() {
+  chosen = { cat: '', catBg: '', catIcon: '', catSlug: '', mood: '', moodSlug: '', moodDesc: '' };
+  goTo(1);
+}
+</script>
+ 
+</body>
+</html>
